@@ -73,9 +73,12 @@ public class RfLinkHandler extends BaseThingHandler implements DeviceMessageList
                     updateThingStates(message);
                     int repeats = 1;
                     if (getThing().getConfiguration().containsKey("repeats")) {
-                        repeats = ((BigDecimal) getThing().getConfiguration().get("repeats")).intValue();
+                        repeats = (getThing().getConfiguration().get("repeats") != null)
+                                ? ((BigDecimal) getThing().getConfiguration().get("repeats")).intValue()
+                                : 1;
                     }
                     repeats = Math.min(Math.max(repeats, 1), 20);
+                    logger.debug("Message will be repeated {} times", repeats);
                     for (int i = 0; i < repeats; i++) {
                         bridgeHandler.sendMessage(message);
                     }

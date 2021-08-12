@@ -23,7 +23,6 @@ import java.util.List;
 
 import javax.xml.bind.DatatypeConverter;
 
-import org.apache.commons.io.IOUtils;
 import org.eclipse.jdt.annotation.NonNullByDefault;
 import org.openhab.binding.rflink.RfLinkBindingConstants;
 import org.openhab.core.io.transport.serial.*;
@@ -55,10 +54,9 @@ public class RfLinkSerialConnector implements RfLinkConnectorInterface, SerialPo
      */
     private BufferedReader input;
     private OutputStream output;
-    private static final int TIME_OUT = 2000;
 
     // delay between messages
-    private static final int SEND_DELAY = 50;
+    private static final int SEND_DELAY = 1000;
 
     private static long lastSend = 0;
 
@@ -111,11 +109,20 @@ public class RfLinkSerialConnector implements RfLinkConnectorInterface, SerialPo
 
         if (output != null) {
             logger.debug("Close serial out stream");
-            IOUtils.closeQuietly(output);
+            try {
+                output.close();
+            } catch (IOException e) {
+                logger.error("Exception while closing output stream", e);
+            }
         }
         if (input != null) {
             logger.debug("Close serial in stream");
-            IOUtils.closeQuietly(input);
+            try {
+                input.close();
+            } catch (IOException e) {
+                logger.error("Exception while closing input stream", e);
+                e.printStackTrace();
+            }
         }
 
         if (serialPort != null) {
